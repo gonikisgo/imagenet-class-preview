@@ -245,22 +245,29 @@
         </div>
     </div>
 
+    <script src="classes_data.js"></script>
     <script>
+        const BASE_URL = 'https://pub-08af02dcf9a74f79aa2af9c163360c90.r2.dev';
+
         let allClasses = [];
         let filteredClasses = [];
 
         // Load and display classes
-        async function loadClasses() {
-            try {
-                const response = await fetch('classes.json');
-                allClasses = await response.json();
-                filteredClasses = [...allClasses];
-                displayClasses();
-            } catch (error) {
-                console.error('Error loading classes:', error);
-                document.getElementById('classGrid').innerHTML = 
-                    '<div class="no-results">Error loading classes. Please try refreshing the page.</div>';
+        function loadClasses() {
+            if (typeof CLASSES_DATA === 'undefined') {
+                document.getElementById('classGrid').innerHTML =
+                    '<div class="no-results">classes_data.js not found. Generate it with the imagenet-classes package.</div>';
+                return;
             }
+
+            allClasses = CLASSES_DATA.map(item => ({
+                label: item.label,
+                class_name: item.name,
+                folder: item.folder,
+                images: item.images.map(img => `${BASE_URL}/${item.folder}/${img}`)
+            }));
+            filteredClasses = [...allClasses];
+            displayClasses();
         }
 
         // Display classes
@@ -368,6 +375,7 @@
 
         // Load classes when page loads
         document.addEventListener('DOMContentLoaded', loadClasses);
+
     </script>
 </body>
 </html>
